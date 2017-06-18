@@ -7,10 +7,12 @@ import 'egggetterbase.dart';
 
 part 'buybank.g.dart';
 
+@serializable
 class Bank extends _$BankSerializable {
   num eggs = 0.0;
 }
 
+@serializable
 class Buyable extends _$BuyableSerializable {
   num basePrice = 1.0;
   num priceCurve = 1.1;
