@@ -69,16 +69,17 @@ class UpgradableMixin extends _$UpgradableMixinSerializable {
   List<Upgrade> upgrades = [];
 }
 
+class FunctionProxyBoi {
+  static List<Function> modifyerFunctions = <Function>[];
+}
+
 @serializable
 @proxy
 class FunctionProxy extends _$FunctionProxySerializable {
-  @ignore
-  static List<Function> modifyerFunctions = <Function>[];
   int numId;
   noSuchMethod(Invocation x) {
     if (x.isMethod) {
-      //probably, do call on modifyerFunctions[numId], invoke it
-      return Function.apply(modifyerFunctions[numId],x.positionalArguments);
+      return Function.apply(FunctionProxyBoi.modifyerFunctions[numId],x.positionalArguments);
     }
   }
   FunctionProxy(this.numId);

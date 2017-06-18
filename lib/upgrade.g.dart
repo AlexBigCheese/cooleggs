@@ -24,7 +24,7 @@ abstract class _$UpgradeTypeSerializable extends SerializableMap {
     throwFieldNotFoundException(key, 'UpgradeType');
   }
 
-  get keys => UpgradeTypeClassMirror.fields.keys;
+  Iterable<String> get keys => UpgradeTypeClassMirror.fields.keys;
 }
 
 const UpgradeTypeClassMirror = const ClassMirror(
@@ -110,7 +110,7 @@ abstract class _$UpgradeSerializable extends SerializableMap {
     throwFieldNotFoundException(key, 'Upgrade');
   }
 
-  get keys => UpgradeClassMirror.fields.keys;
+  Iterable<String> get keys => UpgradeClassMirror.fields.keys;
 }
 
 _Upgrade__Constructor(params) => new Upgrade(params['price'],
@@ -216,7 +216,7 @@ abstract class _$UpgradableMixinSerializable extends SerializableMap {
     throwFieldNotFoundException(key, 'UpgradableMixin');
   }
 
-  get keys => UpgradableMixinClassMirror.fields.keys;
+  Iterable<String> get keys => UpgradableMixinClassMirror.fields.keys;
 }
 
 _UpgradableMixin__Constructor(params) => new UpgradableMixin();
@@ -267,13 +267,11 @@ abstract class _$FunctionProxySerializable extends SerializableMap {
     throwFieldNotFoundException(key, 'FunctionProxy');
   }
 
-  get keys => FunctionProxyClassMirror.fields.keys;
+  Iterable<String> get keys => FunctionProxyClassMirror.fields.keys;
 }
 
 _FunctionProxy__Constructor(params) => new FunctionProxy(params['numId']);
 
-const $$FunctionProxy_fields_modifyerFunctions = const DeclarationMirror(
-    type: const [List, Function], annotations: const [ignore]);
 const $$FunctionProxy_fields_numId = const DeclarationMirror(type: int);
 
 const FunctionProxyClassMirror =
@@ -282,13 +280,10 @@ const FunctionProxyClassMirror =
       parameters: const {'numId': const DeclarationMirror(type: int)},
       call: _FunctionProxy__Constructor)
 }, fields: const {
-  'modifyerFunctions': $$FunctionProxy_fields_modifyerFunctions,
   'numId': $$FunctionProxy_fields_numId
 }, getters: const [
-  'modifyerFunctions',
   'numId'
 ], setters: const [
-  'modifyerFunctions',
   'numId'
 ], methods: const {
   'noSuchMethod': const FunctionMirror(

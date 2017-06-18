@@ -8,6 +8,7 @@ import 'package:dson/dson.dart';
 import 'numformat.dart';
 import 'savedata.dart';
 import 'upgrade.dart';
+import 'buybank.dart';
 
 part 'egggetterbase.g.dart';
 
@@ -25,7 +26,13 @@ void save() {
     String stringToSave;
     try {
       print(saveD.buyableUpgrades.toString());
-      stringToSave = toJson(saveD, depth: [{"buyableUpgrades":"upgradable"},{"upgrades": "upgradable"}], exclude: ["modifierFunctions"]);
+      stringToSave = toJson(saveD, depth: [
+        {"eggGetterFactories": "upgrades"},
+        {"buyableUpgrades": "upgradable"},
+        {"upgrades": "upgradable"}
+      ], exclude: [
+        "modifierFunctions"
+      ]);
     } on NoSuchMethodError catch (e) {
       print(e.toString());
       print("Stack: ");
@@ -35,7 +42,7 @@ void save() {
     } finally {
       if (stringToSave != null) saveDFile.writeAsStringSync(stringToSave);
     }
-    
+
     (scaffoldKey.currentState as ScaffoldState)
         .showSnackBar(new SnackBar(content: new Text("Game Saved!")));
   });
@@ -79,39 +86,20 @@ class EggGetterFactory extends _$EggGetterFactorySerializable
     with UpgradableMixin {
   String typeName = "Egg Farm";
   num thisEggs = 1;
-  num thisPrice = 1.0;
-  num thisCurve = 1.07;
-  num thisMultiPrice = 50;
-  num thisMultiCurve = 1.3;
-  num thisMultiStage = 0;
-  int thisAmmount = 0;
+  Buyable eggStager = new Buyable(1.0);
+  Buyable multiPricer = new Buyable(50.0,1.3);
   @ignore
-  num get price => ((num inputPrice) {
-        for (Upgrade x in upgrades
-            .where((Upgrade x) => x.secondaryType == UpgradeType.PRICE)) {
-          inputPrice = x.modifyValue.call(inputPrice);
-        }
-        return inputPrice;
-      }(thisPrice * pow(((thisCurve != null) ? thisCurve : 0), ((thisAmmount != null) ? thisAmmount : 0))));
+  List<Upgrade> get priceUpgrades => upgrades.where((x) => x.secondaryType == UpgradeType.PRICE);
   @ignore
-  num get multiplyer => pow(1.1, thisMultiStage);
-  @ignore
-  num get multiprice => ((num inputPrice) {
-        for (Upgrade x in upgrades
-            .where((Upgrade x) => x.secondaryType == UpgradeType.PRICE)) {
-          inputPrice = x.modifyValue.call(inputPrice);
-        }
-        return inputPrice;
-      }(thisMultiPrice * pow(((thisMultiCurve != null) ? thisMultiCurve : 0), ((thisMultiStage != null) ? thisMultiStage : 0))));
+  num get multiplyer => pow(1.1, multiPricer.stage);
   @ignore
   num get eggsGet =>
-      ((thisEggs != null) ? thisEggs : 0) * ((thisAmmount != null) ? thisAmmount : 0) * multiplyer * saveD.globalMultiplyer;
+      ((thisEggs != null) ? thisEggs : 0) *
+      ((eggStager.stage != null) ? eggStager.stage : 0) *
+      multiplyer *
+      saveD.globalMultiplyer;
   EggGetterFactory(this.thisEggs,
-      {this.typeName: "Egg Farm",
-      this.thisCurve: 1.12,
-      this.thisPrice: 1.0,
-      this.thisMultiPrice: 50,
-      this.thisMultiCurve: 1.3}) : assert(thisEggs != null);
+      {this.typeName: "Egg Farm", this.eggStager, this.multiPricer});
   @ignore
   Card asWidget() {
     Card toReturn = new Card(
@@ -123,7 +111,7 @@ class EggGetterFactory extends _$EggGetterFactorySerializable
                 padding:
                     const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
                 child: new Text(
-                    "$thisAmmount ${(thisAmmount != 1) ? "${typeName}s" : typeName}",
+                    "${eggStager.stage} ${(eggStager.stage != 1) ? "${typeName}s" : typeName}",
                     style: new TextStyle(fontSize: 12.0))),
             new Padding(
                 padding:
@@ -144,27 +132,15 @@ class EggGetterFactory extends _$EggGetterFactorySerializable
                 child: new Tooltip(
                     message: "buy a $typeName",
                     child: new MaterialButton(
-                        onPressed: () {
-                          if (saveD.eggs >= price) {
-                            doStateUpdate(() {
-                              saveD.eggs -= price;
-                            });
-                            thisAmmount += 1;
-                          }
-                        },
-                        child: new Text("${formatn(price)} eggs")))),
+                        onPressed: (){eggStager.buy(saveD,priceUpgrades);},
+                        child: new Text("${formatn(eggStager.price(priceUpgrades))} eggs")))),
             new Padding(
                 padding: const EdgeInsets.symmetric(vertical: 2.0),
                 child: new MaterialButton(
                     onPressed: () {
-                      if (saveD.eggs >= multiprice) {
-                        doStateUpdate(() {
-                          saveD.eggs -= multiprice;
-                        });
-                        thisMultiStage += 1;
-                      }
+                      multiPricer.buy(saveD,priceUpgrades);
                     },
-                    child: new Text("${formatn(multiprice)} eggs")))
+                    child: new Text("${formatn(multiPricer.price(priceUpgrades))} eggs")))
           ])
         ]));
     return toReturn;
@@ -182,7 +158,7 @@ class EggGetterFactory extends _$EggGetterFactorySerializable
                       title: new Text(typeName)),
                   new Card(
                       child: new Column(children: [
-                        const Icon(Icons.public),
+                    const Icon(Icons.public),
                     new ListTile(
                         title: new Text('Overall: ' + formatn(eggsGet) + '/s')),
                     new ListTile(
@@ -202,7 +178,7 @@ class EggGetterFactory extends _$EggGetterFactorySerializable
                             'Multiplyer Self: ' + formatn(multiplyer))),
                     new ListTile(
                         title: new Text(
-                            'Multiplyer Stage: ' + formatn(thisMultiStage)))
+                            'Multiplyer Stage: ' + formatn(multiPricer.stage)))
                   ]))
                 ]);
               },

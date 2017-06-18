@@ -11,15 +11,17 @@ import 'package:path_provider/path_provider.dart';
 import 'egggetterbase.dart';
 import 'numformat.dart';
 import 'savedata.dart';
+import 'buybank.dart';
 import 'upgrade.dart';
 
 part 'main.g.dart';
 
 void main() {
   _initMirrors();
-  FunctionProxy.modifyerFunctions = [
+  FunctionProxyBoi.modifyerFunctions = [
     (num x) => x * 0.90
   ];
+  deleteSave();
   runApp(new MyApp());
 }
 
@@ -164,8 +166,8 @@ class _MyHomePageState extends State<MyHomePage>
                   new Tooltip(
                       message: "upgrade Global Multiplyer",
                       child: new MaterialButton(
-                          child: new Text("${formatn(saveD.gmPrice)} eggs"),
-                          onPressed: saveD.buyGm))
+                          child: new Text("${formatn(saveD.gmStager.price())} eggs"),
+                          onPressed: (){saveD.gmStager.buy(saveD);}))
                 ])
               ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
             )
@@ -195,8 +197,8 @@ class _MyHomePageState extends State<MyHomePage>
                 new Tooltip(
                     message: "upgrade Global Multiplyer",
                     child: new MaterialButton(
-                        child: new Text("${formatn(saveD.gmPrice)} eggs"),
-                        onPressed: saveD.buyGm))
+                        child: new Text("${formatn(saveD.gmStager.price())} eggs"),
+                        onPressed: (){saveD.gmStager.buy(saveD);}))
               ])
             ], mainAxisAlignment: MainAxisAlignment.spaceBetween),
           )
